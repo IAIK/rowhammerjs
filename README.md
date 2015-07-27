@@ -51,7 +51,7 @@ Then you can start Hammering.
 
 ## Rowhammer.html / Rowhammer.js
 In the ''javascript'' folder your right now only find the Rowhammer.js version
-for Haswell CPUs with a 24-way L3 cache and no L4 cache. It will probably not
+for Haswell CPUs with a 16-way L3 cache and no L4 cache. It will probably not
 work on other CPUs without modifications.
 
 Open ''rowhammer.html'' in a browser, paste the hammering array indices in the
