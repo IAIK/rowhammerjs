@@ -1,8 +1,10 @@
-
 # Program for testing for the DRAM "rowhammer" problem using eviction
 
 See https://github.com/google/rowhammer-test - this is an adaption of the
 ''double_sided_rowhammer'' program from their repository.
+
+Also see our paper ''Rowhammer.js: A Remote Software-Induced Fault Attack in JavaScript''
+on Arxiv: http://arxiv.org/abs/1507.06955
 
 ## How to run the native eviction-based rowhammer test
 
