@@ -54,6 +54,8 @@ function refresh() {
 }
 refresh();
 </script>
+<p>This is not the pure JavaScript version of Rowhammer.js.
+This version is tested on a Haswell CPU with a 24-way L3 cache and no L4 cache. It will probably not work on other CPUs.</p>
 offsets <textarea id="mapping" width="30" height="20"></textarea><br/>
 number_of_reads <input id="number_of_reads" type="text" value="2097152" /><br/>
 <button onclick="start()">Allocate</button>
