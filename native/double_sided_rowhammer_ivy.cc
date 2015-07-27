@@ -198,7 +198,7 @@ void pick(volatile uint64_t** addrs, int step)
   uint64_t phys1 = get_physical_addr((uint64_t)buf);
   uint64_t presumed_row_index = phys1 / ROW_SIZE;
   int found = 1;
-  //printf("%zx\n",phys1 / ROW_SIZE);
+  //printf("%zx\n",phys1 / ROW_SIZE); // Print this for the watch_firefox tool
   presumed_row_index += step;
   while (found < ADDR_COUNT)
   {
@@ -206,7 +206,7 @@ void pick(volatile uint64_t** addrs, int step)
       uint64_t phys2 = get_physical_addr((uint64_t)second_row_page);
       if ((phys2 / ROW_SIZE) != ((phys1 / ROW_SIZE)+1) && /*in_same_bank(phys1,phys2) &&*/ in_same_cache_set(phys1, phys2, -1)) {
         addrs[found] = (uint64_t*)second_row_page;
-        //printf("%zx\n",phys2 / ROW_SIZE);
+        //printf("%zx\n",phys2 / ROW_SIZE); // Print this for the watch_firefox tool
         found++;
       }
     }
