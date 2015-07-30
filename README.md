@@ -64,7 +64,7 @@ You can modify ''rowhammer.js'' while the page is still loaded and click the
 the array and the array indices and you can experiment with different settings
 while not having to search for the array indices anew.
 
-## Pure JavaScript Proof-of-concept: rowhammer_scan.html / rowhammer_scan.js
+## Javascript-only Variant
 Also, in the ''javascript'' folder you will find the ''rowhammer_scan.html''.
 It is the pure JavaScript proof-of-concept for Haswell CPUs with a 16-way L3 cache and no L4 cache, memory in single-channel mode (this is the case if you have only one DIMM). Furthermore, it assumes that JavaScript memory is physically contiguous in blocks of 2 megabytes - this is the case if your OS allocates 2M anonymous pages (all our Linux systems do) or if it allocates physically contiguous 4K pages. It will probably not work on other systems without modifications.
 
