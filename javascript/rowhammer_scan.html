@@ -1,0 +1,67 @@
+<!--
+// Copyright 2015, Daniel Gruss, Clémentine Maurice
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+-->
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Test</title>
+<style type="text/css">
+table{
+border: 0px;
+border-spacing: 0px;
+border: 0px;
+}
+tr {
+height: 10px;
+border-spacing: 0px;
+border: 0px;
+}
+td {
+width: 10px;
+border-spacing: 0px;
+border: 0px;
+}
+</style>
+</head>
+<body>
+<script type="text/javascript">
+var array = new Uint8ClampedArray(32*32*32*32*32*63);
+var alloci = 0;
+var stop = 0;
+var offsets = null;
+var v = new Array();
+var f = new Array();
+var s = new Array();
+var sum = 1;
+var hist = Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+
+function refresh() {
+  var scriptElement = document.createElement('script');
+  scriptElement.type = 'text/javascript';
+  scriptElement.src = 'rowhammer_scan.js?' + (new Date).getTime();
+  document.getElementsByTagName('head')[0].appendChild(scriptElement);
+}
+refresh();
+</script>
+<p>JavaScript-only version of Rowhammer.js.
+This version is tested on a Haswell CPU with a 16-way L3 cache and no L4 cache. It will probably not work on other CPUs. However, the code can be adapted to other CPUs as well.</p>
+<p>See our <a href="https://github.com/IAIK/rowhammerjs">repository</a> for more information.</p>
+number_of_reads <input id="number_of_reads" type="text" value="2097152" /><br/>
+<button onclick="start()">Allocate</button>
+<button onclick="refresh()">Refresh</button>
+<button onclick="hammer()">Hammer</button>
+<div id="histogram"></div>
+<div id="text"></div>
+</body></html>
+<html><head></head><body></body></html>

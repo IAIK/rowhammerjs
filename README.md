@@ -52,8 +52,8 @@ In case of ''rowhammer.html'' just copy them into the editbox and click ''Parse'
 Then you can start Hammering.
 
 ## Rowhammer.html / Rowhammer.js
-In the ''javascript'' folder your right now only find the Rowhammer.js version
-for Haswell CPUs with a 16-way L3 cache and no L4 cache. It will probably not
+In the ''javascript'' folder you find the Rowhammer.js version
+for Haswell CPUs with a 16-way L3 cache and no L4 cache ''rowhammer.html''. It will probably not
 work on other CPUs without modifications.
 
 Open ''rowhammer.html'' in a browser, paste the hammering array indices in the
@@ -65,7 +65,22 @@ the array and the array indices and you can experiment with different settings
 while not having to search for the array indices anew.
 
 ## JavaScript only variant
-Not yet public.
+Also, in the ''javascript'' folder you will find the ''rowhammer_scan.html''.
+It is the pure JavaScript proof-of-concept for Haswell CPUs with a 16-way L3 cache and no L4 cache. It will probably not work on other CPUs without modifications.
+
+Open ''rowhammer_scan.html'' in a browser. Click the ''Allocate'' button. Wait a second to let Firefox allocate memory and click ''Hammer'' to start the hammering.
+
+For reference we have added a screenshot:
+![Screenshot of rowhammer_scan.html](/javascript/screenshot.png)
+
+You can modify ''rowhammer_scan.js'' while the page is still loaded and click the
+''Refresh'' button to only reload the ''rowhammer.js'' file. This way you keep
+the array and the array indices and you can experiment with different settings
+while not having to allocate the array anew.
+
+This version is not adaptive to all CPUs. As we said in the paper, the eviction strategy finding algorithm is very slow. We still try different optimizations and we will evaluate it's performance.
+However, there is not much use in doing this search in JavaScript as it takes hours and there is not much benefit once you know the strategy. A more realistic adaptive approach would be to try different strategies that are already known to work on some CPUs. This way you can find the right strategy adaptively without having to execute the generic eviction strategy finding algorithm.
+However, if you like to try, you will find the ''cached'' function already implemented in the ''rowhammer_scan.js''.
 
 ## Warnings
 
