@@ -51,7 +51,7 @@ The program prints the array indices to use in JavaScript.
 In case of ''rowhammer.html'' just copy them into the editbox and click ''Parse''.
 Then you can start Hammering.
 
-## Rowhammer.html / Rowhammer.js
+## rowhammer.html / rowhammer.js
 In the ''javascript'' folder you find the Rowhammer.js version
 for Haswell CPUs with a 16-way L3 cache and no L4 cache ''rowhammer.html''. It will probably not
 work on other CPUs without modifications.
@@ -64,9 +64,9 @@ You can modify ''rowhammer.js'' while the page is still loaded and click the
 the array and the array indices and you can experiment with different settings
 while not having to search for the array indices anew.
 
-## JavaScript only variant
+## Pure JavaScript Proof-of-concept: rowhammer_scan.html / rowhammer_scan.js
 Also, in the ''javascript'' folder you will find the ''rowhammer_scan.html''.
-It is the pure JavaScript proof-of-concept for Haswell CPUs with a 16-way L3 cache and no L4 cache. It will probably not work on other CPUs without modifications.
+It is the pure JavaScript proof-of-concept for Haswell CPUs with a 16-way L3 cache and no L4 cache, memory in single-channel mode (this is the case if you have only one DIMM). Furthermore, it assumes that JavaScript memory is physically contiguous in blocks of 2 megabytes - this is the case if your OS allocates 2M anonymous pages (all our Linux systems do) or if it allocates physically contiguous 4K pages. It will probably not work on other systems without modifications.
 
 Open ''rowhammer_scan.html'' in a browser. Click the ''Allocate'' button. Wait a second to let Firefox allocate memory and click ''Hammer'' to start the hammering.
 
