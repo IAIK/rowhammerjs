@@ -109,24 +109,10 @@ void SetupMapping(uint64_t* mapping_size, void** mapping) {
 
 // Given a physical memory address, this hashes the address and
 // returns the number of the cache slice that the address maps to.
-//
-// "bad_bit" lets us test whether this hash function is correct.  It
-// inverts whether the given bit number is included in the set of
-// address bits to hash.
 int get_cache_slice(uint64_t phys_addr, int bad_bit) {
-  // On a 4-core machine, the CPU's hash function produces a 2-bit
-  // cache slice number, where the two bits are defined by "h1" and
-  // "h2":
-  //
-  // h1 function:
-  //   static const int bits[] = { 18, 19, 21, 23, 25, 27, 29, 30, 31 };
-  // h2 function:
-  //   static const int bits[] = { 17, 19, 20, 21, 22, 23, 24, 26, 28, 29, 31 };
-  //
-  // This hash function is described in the paper "Practical Timing
-  // Side Channel Attacks Against Kernel Space ASLR".
-  static const int h0[] = { 18, 19, 21, 23, 25, 27, 29, 30, 31 };
-  static const int h1[] = { 17, 19, 20, 21, 22, 23, 24, 26, 28, 29, 31 };
+  static const int h0[] = { 6, 10, 12, 14, 16, 17, 18, 20, 22, 24, 25, 26, 27, 28, 30, 32, 33, 35, 36 };
+  static const int h1[] = { 7, 11, 13, 15, 17, 19, 20, 21, 22, 23, 24, 26, 28, 29, 31, 33, 34, 35, 37 };
+
 
   int count = sizeof(h0) / sizeof(h0[0]);
   int hash = 0;
@@ -247,7 +233,7 @@ uint64_t HammerAddressesStandard(
 #define F2(X,Y,Z) F(X,Y,Z); F(X,Y,Z)
 #define F3(X,Y,Z) F(X,Y,Z); F(X,Y,Z); F(X,Y,Z)
   while (number_of_reads_l-- > 0) {
-   for (size_t i = 1; i < 34; i += 1)
+   for (size_t i = 1; i < 17; i += 1)
    {
      *faddrs[i];
      *saddrs[i];
