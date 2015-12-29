@@ -500,7 +500,7 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
         uint32_t offset_line = 0;
         uint8_t cnt = 0;
         // Set all the target pages to 0xFF.
-#define VAL ((uint64_t)((offset % 2) == 0 ? -1ULL : 0x1))
+#define VAL ((uint64_t)((offset % 2) == 0 ? 0 : -1ULL))
         for (int32_t offset = 0; offset < 3; offset += 1)
         for (uint8_t* target_page8 : pages_per_row[row_index+offset]) {
           uint64_t* target_page = (uint64_t*)target_page8;
@@ -558,6 +558,8 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
         number_of_reads = NUMBER_OF_READS;
         if (OFFSET2 < 0)
           OFFSET2--;
+        else
+          break;
       }
       if (OFFSET1 < 0)
         OFFSET1--;
