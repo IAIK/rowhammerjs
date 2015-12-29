@@ -26,7 +26,8 @@
 #include <linux/hw_breakpoint.h>
 #include <sys/ioctl.h>
 #include <asm/unistd.h>
-#include <assert.h>
+//#include <assert.h>
+#define assert(X) do { if (!(X)) { fprintf(stderr,"assertion '" #X "' failed\n"); exit(-1); } } while (0)
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
