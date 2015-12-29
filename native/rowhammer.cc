@@ -561,6 +561,8 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
       }
       if (OFFSET1 < 0)
         OFFSET1--;
+      else
+        break;
     }
   }
   return total_bitflips;
