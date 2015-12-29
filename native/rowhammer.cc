@@ -158,6 +158,54 @@ int get_cache_slice(uint64_t phys_addr, int bad_bit) {
   return hash1 << 1 | hash;
 }
 
+size_t get_dram_mapping(void* phys_addr_p) {
+#if defined(SANDY) || defined(IVY) || defined(HASWELL)
+  uint64_t phys_addr = (uint64_t) phys_addr_p;
+#if defined(SANDY)
+  static const size_t h0[] = { 14, 18 };
+  static const size_t h1[] = { 15, 19 };
+  static const size_t h2[] = { 16, 20 };
+  static const size_t h3[] = { 17, 21 };
+  static const size_t h4[] = { 6 };
+#elif defined(IVY) || defined(HASWELL)
+  static const size_t h0[] = { 14, 18 };
+  static const size_t h1[] = { 15, 19 };
+  static const size_t h2[] = { 16, 20 };
+  static const size_t h3[] = { 17, 21 };
+  static const size_t h4[] = { 7, 8, 9, 12, 13, 18, 19 };
+#endif
+
+  size_t count = sizeof(h0) / sizeof(h0[0]);
+  size_t hash = 0;
+  for (size_t i = 0; i < count; i++) {
+    hash ^= (phys_addr >> h0[i]) & 1;
+  }
+  count = sizeof(h1) / sizeof(h1[0]);
+  size_t hash1 = 0;
+  for (size_t i = 0; i < count; i++) {
+    hash1 ^= (phys_addr >> h1[i]) & 1;
+  }
+  count = sizeof(h2) / sizeof(h2[0]);
+  size_t hash2 = 0;
+  for (size_t i = 0; i < count; i++) {
+    hash2 ^= (phys_addr >> h2[i]) & 1;
+  }
+  count = sizeof(h3) / sizeof(h3[0]);
+  size_t hash3 = 0;
+  for (size_t i = 0; i < count; i++) {
+    hash3 ^= (phys_addr >> h3[i]) & 1;
+  }
+  count = sizeof(h4) / sizeof(h4[0]);
+  size_t hash4 = 0;
+  for (size_t i = 0; i < count; i++) {
+    hash4 ^= (phys_addr >> h4[i]) & 1;
+  }
+  return (hash4 << 4) | (hash3 << 3) | (hash2 << 2) | (hash1 << 1) | hash;
+#else
+  return 0;
+#endif
+}
+
 bool in_same_cache_set(uint64_t phys1, uint64_t phys2, int bad_bit) {
   // For Sandy Bridge, the bottom 17 bits determine the cache set
   // within the cache slice (or the location within a cache line).
@@ -447,6 +495,8 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
       {
         if (OFFSET2 >= 0)
           second_row_page = pages_per_row[row_index+2].at(OFFSET2);
+        if (get_dram_mapping(first_row_page) != get_dram_mapping(second_row_page))
+          continue;
         uint32_t offset_line = 0;
         uint8_t cnt = 0;
         // Set all the target pages to 0xFF.
@@ -457,7 +507,6 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
           for (uint32_t index = 0; index < 512; ++index)
             target_page[index] = VAL;
         }
-
         // Now hammer the two pages we care about.
         std::pair<uint64_t, uint64_t> first_page_range(
             reinterpret_cast<uint64_t>(first_row_page+offset_line),
@@ -467,7 +516,9 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
             reinterpret_cast<uint64_t>(second_row_page+offset_line+0x1000));
         
         size_t number_of_bitflips_in_target = 0;
+#ifdef FIND_EXPLOITABLE_BITFLIPS
         for (size_t tries = 0; tries < 2; ++tries)
+#endif
         {
         hammer(first_page_range, second_page_range, number_of_reads);
         // Now check the target pages.
@@ -484,6 +535,7 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
                   row_index,row_index +2,OFFSET1 < 0?-(OFFSET1+1):OFFSET1,OFFSET2 < 0?-(OFFSET2+1):OFFSET2);
             }
           }
+#ifdef FIND_EXPLOITABLE_BITFLIPS
           if (number_of_bitflips_in_target > 0)
           {
             for (uint32_t index = 0; index < 512; ++index) {
@@ -494,11 +546,14 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
               }
             }
           }
+#endif
         }
+#ifdef FIND_EXPLOITABLE_BITFLIPS
         if (number_of_bitflips_in_target == 0)
           break;
         else
           number_of_reads = 16*NUMBER_OF_READS;
+#endif
         }
         number_of_reads = NUMBER_OF_READS;
         if (OFFSET2 < 0)
