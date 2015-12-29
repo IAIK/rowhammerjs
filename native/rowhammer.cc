@@ -333,6 +333,7 @@ uint64_t HammerAddressesStandard(
     hists[MAX(MIN((t2 - t) / 5,99),0)]++;
 #endif
 
+#ifdef EVICTION_BASED
    for (size_t i = 1; i < 18; i += 1)
    {
      *faddrs[i];
@@ -356,6 +357,10 @@ uint64_t HammerAddressesStandard(
      *faddrs[i+1];
      *saddrs[i+1];
    }
+#else
+   asm volatile("clflush (%0)" : : "r" (f) : "memory");
+   asm volatile("clflush (%0)" : : "r" (s) : "memory");
+#endif
   }
   printf("%zu ",(rdtsc2() - t0) / (NUMBER_OF_READS));
 #ifdef MEASURE_EVICTION
