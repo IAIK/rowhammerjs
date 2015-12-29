@@ -478,10 +478,10 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
     }
     if (cont)
       continue;
-/*    printf("[!] Hammering rows %ld/%ld/%ld of %ld (got %ld/%ld/%ld pages)\n",
+    printf("[!] Hammering rows %ld/%ld/%ld of %ld (got %ld/%ld/%ld pages)\n",
         row_index, row_index+1, row_index+2, pages_per_row.size(),
         pages_per_row[row_index].size(), pages_per_row[row_index+1].size(),
-        pages_per_row[row_index+2].size());*/
+        pages_per_row[row_index+2].size());
     if (OFFSET1 < 0)
       OFFSET1 = -1;
     // Iterate over all pages we have for the first row.
