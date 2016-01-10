@@ -57,7 +57,7 @@ namespace {
 double fraction_of_physical_memory = 0.4;
 
 // The time to hammer before aborting. Defaults to one hour.
-uint64_t number_of_seconds_to_hammer = 7200;
+uint64_t number_of_seconds_to_hammer = 720000;
 
 // This vector will be filled with all the pages we can get access to for a
 // given row size.
@@ -157,22 +157,33 @@ int get_cache_slice(uint64_t phys_addr, int bad_bit) {
   }
   return hash1 << 1 | hash;
 }
-
 size_t get_dram_mapping(void* phys_addr_p) {
-#if defined(SANDY) || defined(IVY) || defined(HASWELL)
+#if defined(SANDY) || defined(IVY) || defined(HASWELL) || defined(SKYLAKE)
   uint64_t phys_addr = (uint64_t) phys_addr_p;
 #if defined(SANDY)
+#define ARCH_SHIFT (1)
   static const size_t h0[] = { 14, 18 };
   static const size_t h1[] = { 15, 19 };
   static const size_t h2[] = { 16, 20 };
   static const size_t h3[] = { 17, 21 };
   static const size_t h4[] = { 6 };
+  static const size_t h5[] = { 6 };
 #elif defined(IVY) || defined(HASWELL)
+#define ARCH_SHIFT (1)
   static const size_t h0[] = { 14, 18 };
   static const size_t h1[] = { 15, 19 };
   static const size_t h2[] = { 16, 20 };
   static const size_t h3[] = { 17, 21 };
   static const size_t h4[] = { 7, 8, 9, 12, 13, 18, 19 };
+  static const size_t h5[] = { 7, 8, 9, 12, 13, 18, 19 };
+#elif defined(SKYLAKE)
+#define ARCH_SHIFT (2)
+  static const size_t h0[] = { 7, 14 };
+  static const size_t h1[] = { 15, 19 };
+  static const size_t h2[] = { 16, 20 };
+  static const size_t h3[] = { 17, 21 };
+  static const size_t h4[] = { 18, 22 };
+  static const size_t h5[] = { 8, 9, 12, 13, 18, 19 };
 #endif
 
   size_t count = sizeof(h0) / sizeof(h0[0]);
@@ -200,8 +211,14 @@ size_t get_dram_mapping(void* phys_addr_p) {
   for (size_t i = 0; i < count; i++) {
     hash4 ^= (phys_addr >> h4[i]) & 1;
   }
-  return (hash4 << 4) | (hash3 << 3) | (hash2 << 2) | (hash1 << 1) | hash;
+  count = sizeof(h5) / sizeof(h5[0]);
+  size_t hash5 = 0;
+  for (size_t i = 0; i < count; i++) {
+    hash5 ^= (phys_addr >> h5[i]) & 1;
+  }
+  return (hash5 << 5) | (hash4 << 4) | (hash3 << 3) | (hash2 << 2) | (hash1 << 1) | hash;
 #else
+#define ARCH_SHIFT (1)
   return 0;
 #endif
 }
@@ -247,7 +264,7 @@ uint64_t get_physical_addr(uint64_t virtual_addr) {
   return (frame_num * 4096) | (virtual_addr & (4095));
 }
 
-#define ROW_SIZE (128*1024*DIMMS)
+#define ROW_SIZE (128*1024*DIMMS*ARCH_SHIFT)
 #define ADDR_COUNT (32)
 
 void pick(volatile uint64_t** addrs, int step)
@@ -468,11 +485,11 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
     bool cont = false;
     for (int64_t offset = 0; offset < 3; ++offset)
     {
-      if (pages_per_row[row_index + offset].size() != 32*DIMMS)
+      if (pages_per_row[row_index + offset].size() != ROW_SIZE/4096)
       {
         cont = true;
-        fprintf(stderr,"[!] Can't hammer row %ld - only got %ld pages\n",
-            row_index+offset, pages_per_row[row_index+offset].size());
+        fprintf(stderr,"[!] Can't hammer row %ld - only got %ld (of %ld) pages\n",
+            row_index+offset, pages_per_row[row_index+offset].size(),ROW_SIZE/4096);
         break;
       }
     }
@@ -603,7 +620,7 @@ int main(int argc, char** argv) {
         fraction_of_physical_memory = atof(optarg);
         break;
       case 'c':
-        CORES = atof(optarg);
+        CORES = atof(optarg) * ARCH_SHIFT;
         break;
       case 'd':
         DIMMS = atoi(optarg);

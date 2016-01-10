@@ -9,4 +9,6 @@ rowhammer-sandy: rowhammer.cc
 	g++ -g -pthread -std=c++11 -O3 -o $@ -DSANDY $^
 rowhammer-haswell: rowhammer.cc
 	g++ -g -pthread -std=c++11 -O3 -o $@ -DHASWELL $^
+rowhammer-skylake: rowhammer.cc
+	g++ -g -pthread -std=c++11 -O3 -o $@ -DSKYLAKE $^
 
