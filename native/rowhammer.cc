@@ -166,7 +166,7 @@ size_t get_dram_mapping(void* phys_addr_p) {
   static const size_t h1[] = { 15, 19 };
   static const size_t h2[] = { 16, 20 };
   static const size_t h3[] = { 17, 21 };
-  static const size_t h4[] = { 6 };
+  static const size_t h4[] = { 17, 21 };
   static const size_t h5[] = { 6 };
 #elif defined(IVY) || defined(HASWELL)
 #define ARCH_SHIFT (1)
@@ -174,7 +174,7 @@ size_t get_dram_mapping(void* phys_addr_p) {
   static const size_t h1[] = { 15, 19 };
   static const size_t h2[] = { 16, 20 };
   static const size_t h3[] = { 17, 21 };
-  static const size_t h4[] = { 7, 8, 9, 12, 13, 18, 19 };
+  static const size_t h4[] = { 17, 21 };
   static const size_t h5[] = { 7, 8, 9, 12, 13, 18, 19 };
 #elif defined(SKYLAKE)
 #define ARCH_SHIFT (2)
@@ -186,35 +186,38 @@ size_t get_dram_mapping(void* phys_addr_p) {
   static const size_t h5[] = { 8, 9, 12, 13, 18, 19 };
 #endif
 
-  size_t count = sizeof(h0) / sizeof(h0[0]);
   size_t hash = 0;
+  size_t count = sizeof(h0) / sizeof(h0[0]);
   for (size_t i = 0; i < count; i++) {
     hash ^= (phys_addr >> h0[i]) & 1;
   }
-  count = sizeof(h1) / sizeof(h1[0]);
   size_t hash1 = 0;
+  count = sizeof(h1) / sizeof(h1[0]);
   for (size_t i = 0; i < count; i++) {
     hash1 ^= (phys_addr >> h1[i]) & 1;
   }
-  count = sizeof(h2) / sizeof(h2[0]);
   size_t hash2 = 0;
+  count = sizeof(h2) / sizeof(h2[0]);
   for (size_t i = 0; i < count; i++) {
     hash2 ^= (phys_addr >> h2[i]) & 1;
   }
-  count = sizeof(h3) / sizeof(h3[0]);
   size_t hash3 = 0;
+  count = sizeof(h3) / sizeof(h3[0]);
   for (size_t i = 0; i < count; i++) {
     hash3 ^= (phys_addr >> h3[i]) & 1;
   }
-  count = sizeof(h4) / sizeof(h4[0]);
   size_t hash4 = 0;
+  count = sizeof(h4) / sizeof(h4[0]);
   for (size_t i = 0; i < count; i++) {
     hash4 ^= (phys_addr >> h4[i]) & 1;
   }
-  count = sizeof(h5) / sizeof(h5[0]);
   size_t hash5 = 0;
-  for (size_t i = 0; i < count; i++) {
-    hash5 ^= (phys_addr >> h5[i]) & 1;
+  if (DIMMS > 1)
+  {
+    count = sizeof(h5) / sizeof(h5[0]);
+    for (size_t i = 0; i < count; i++) {
+      hash5 ^= (phys_addr >> h5[i]) & 1;
+    }
   }
   return (hash5 << 5) | (hash4 << 4) | (hash3 << 3) | (hash2 << 2) | (hash1 << 1) | hash;
 #else
