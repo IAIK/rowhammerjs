@@ -429,8 +429,13 @@ uint64_t HammerAddressesStandard(
      *saddrs[i+1];
    }
 #else
+#if defined(SKYLAKE) && !defined(NO_CLFLUSHOPT)
+   asm volatile("clflushopt (%0)" : : "r" (f) : "memory");
+   asm volatile("clflushopt (%0)" : : "r" (s) : "memory");
+#else
    asm volatile("clflush (%0)" : : "r" (f) : "memory");
    asm volatile("clflush (%0)" : : "r" (s) : "memory");
+#endif
 #endif
   }
   printf("%zu ",(rdtsc2() - t0) / (NUMBER_OF_READS));
@@ -519,7 +524,14 @@ uint64_t HammerAllReachablePages(void* memory_mapping, uint64_t memory_mapping_s
         if (OFFSET2 >= 0)
           second_row_page = pages_per_row[row_index+2].at(OFFSET2);
         if (get_dram_mapping(first_row_page) != get_dram_mapping(second_row_page))
+        {
+          if (OFFSET1 >= 0 && OFFSET2 >= 0 && ROW_INDEX >= 0)
+          {
+            printf("[!] Combination not valid for your architecture, won't be in the same bank.\n");
+            exit(-1);
+          }
           continue;
+        }
         uint32_t offset_line = 0;
         uint8_t cnt = 0;
         // Set all the target pages to 0xFF.
