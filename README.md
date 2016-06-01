@@ -3,8 +3,7 @@
 See https://github.com/google/rowhammer-test - this is an adaption of the
 ''double_sided_rowhammer'' program from their repository.
 
-Also see our paper ''Rowhammer.js: A Remote Software-Induced Fault Attack in JavaScript''
-on Arxiv: http://arxiv.org/abs/1507.06955
+Also see our paper ''Rowhammer.js: A Remote Software-Induced Fault Attack in JavaScript'': https://scholar.google.at/citations?view_op=view_citation&hl=de&user=JmCg4uQAAAAJ&citation_for_view=JmCg4uQAAAAJ:tOudhMTPpwUC
 
 ## How to run the native eviction-based rowhammer test
 
