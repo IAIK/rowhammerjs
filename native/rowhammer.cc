@@ -376,8 +376,10 @@ uint64_t HammerAddressesStandard(
   faddrs[0] = (uint64_t*) first_range.first;
   saddrs[0] = (uint64_t*) second_range.first;
 
+#ifdef EVICTION_BASED
   pick(faddrs,+1);
   pick(saddrs,+1);
+#endif
 
   volatile uint64_t* f = faddrs[0];
   volatile uint64_t* s = saddrs[0];
